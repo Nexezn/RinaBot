@@ -30,6 +30,22 @@ for (const file of commandFiles){
     }
 }
 
+//Dynamically retrieve event files.
+const eventsPath = path.join(__dirname, '../events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles){
+    const filePath = path.join(eventsPath, file);
+    const event = require(filePath);
+
+    if (event.once){
+        client.once(event.name, (...args) => event.execute(...args));
+    }
+    else{
+        client.on(event.name, (...args) => event.execute(...args));
+    }
+}
+
 
 const TOKEN = process.env.BOT_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -37,36 +53,11 @@ const GUILD_ID = process.env.GUILD_ID;
 
 const rest = new REST({version: '10'}).setToken(TOKEN);
 
-client.on('ready', () => {
-    console.log(`${client.user.tag} has logged in!`);
-});
-
-//Command listener which responds with proper command if exists, logs and ignores if nonexistent.
-client.on('interactionCreate', async interaction => {
-    if (interaction.isChatInputCommand()){
-
-        const command = client.commands.get(interaction.commandName);
-
-        if (!command){
-            console.error(`No command matching ${interaction.commandName} was found.`);
-            return;
-        }
-        try{
-            await command.execute(interaction);
-        } catch (error){
-            console.error(error);
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true});
-        }
-    }
-});
-
 /**
  * main is a asynchronous function which updates commands supported by Rina, additionally it will also login the bot.
  * 
  */
 async function main(){
-
-    
 
     try{
         console.log("Started refreshing application (/) commands.");
