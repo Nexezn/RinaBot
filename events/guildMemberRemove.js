@@ -7,11 +7,11 @@ module.exports = {
 
     /**
      * 
-     * @param {object} client 
+     * @param {object} member 
      */
-    async execute(client){
+    async execute(member){
         //TODO: Notify server someone left in specific channel and log it.
         const welcomeChannel = member.guild.channels.get('989288360281526303');
-        welcomeChannel.send({ content: `${client.user.tag} has left the server.`});
+        welcomeChannel.send({ content: `${member.user.tag} has left the server.`});
     },
 };
